@@ -116,35 +116,19 @@ test-suite test
   main-is: Main.hs
   type: exitcode-stdio-1.0
 
-benchmark bench-ephemeral-queue
-  import: component
-  build-depends:
-    base,
-    queues,
-    tasty-bench ^>= 0.3.5 || ^>= 0.4,
-  ghc-options: -fproc-alignment=64 -rtsopts -threaded
-  hs-source-dirs: bench/ephemeral-queue
-  main-is: Main.hs
-  type: exitcode-stdio-1.0
 
-benchmark bench-real-time-queue
-  import: component
-  build-depends:
-    base,
-    queues,
-    tasty-bench ^>= 0.3.5 || ^>= 0.4,
-  ghc-options: -fproc-alignment=64 -rtsopts -threaded
-  hs-source-dirs: bench/real-time-queue
-  main-is: Main.hs
-  type: exitcode-stdio-1.0
+benchmark bench
+  type:             exitcode-stdio-1.0
 
-benchmark bench-sequence-queue
-  import: component
-  build-depends:
-    base,
-    containers ^>= 0.6.7 || ^>= 0.7,
-    tasty-bench ^>= 0.3.5 || ^>= 0.4,
-  ghc-options: -fproc-alignment=64 -rtsopts -threaded
-  hs-source-dirs: bench/sequence-queue
-  main-is: Main.hs
-  type: exitcode-stdio-1.0
+  build-depends:    base
+                  , containers
+                  , queues
+                  , tasty-bench
+
+  hs-source-dirs:   bench
+
+  main-is:          Main.hs
+
+  ghc-options:      -Wall
+
+  default-language: Haskell2010
