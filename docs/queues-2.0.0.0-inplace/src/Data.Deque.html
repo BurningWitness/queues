@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="annot"><span class="hs-comment">{-| A t'Deque' is a spine-strict double-ended queue that incrementally rebalances
+    itself when elements are added or removed.
+
+    == Laziness
+
+    Evaluating the root of the queue (i.e. @(_ :: t'Deque' a)@) to weak head normal form
+    evaluates equal extents of the back and the front of the queue to normal form,
+    while the remaining parts of both sides are represented as at most two thunks.
+
+    Functions do not perform any additional evaluations unless their documentation
+    directly specifies so.
+
+    == Performance
+
+    Each function's time complexity is provided in the documentation.
+
+    \(n\) refers to the total number of elements in the queue.
+    Parts of the heap are denoted using subscripts:
+    \(n_L\) refers to the left side, \(n_R\) to the right side,
+    and \(n_M\) refers to the total number of elements collected with the 'Monoid'.
+
+    == Implementation
+
+    The implementation is specialized for \(c = 2\).
+
+    Description of the real-time double-ended queue can be found within the
+    following paper:
+
+    - Chris Okasaki, /&quot;Purely Functional Data Structures&quot;/, September 1996, pages 57-59,
+      https://www.cs.cmu.edu/~rwh/students/okasaki.pdf
+ -}</span></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Deque.html"><span class="hs-identifier">Data.Deque</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- * Itself</span></span><span>
+</span><span id="line-35"></span><span>    </span><span class="annot"><a href="Data.Deque.Internal.html#Deque"><span class="hs-identifier">Deque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Deque.Internal.html#Empty"><span class="hs-identifier">Empty</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#%3A%3C%7C"><span class="hs-operator">(:&lt;|)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#%3A%7C%3E"><span class="hs-operator">(:|&gt;)</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Construct</span></span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#empty"><span class="hs-identifier">empty</span></a></span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#singleton"><span class="hs-identifier">singleton</span></a></span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#fromListF"><span class="hs-identifier">fromListF</span></a></span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#fromListB"><span class="hs-identifier">fromListB</span></a></span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Front</span></span><span>
+</span><span id="line-44"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Insert</span></span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#%3C%7C"><span class="hs-operator">(&lt;|)</span></a></span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** View</span></span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#ViewF"><span class="hs-identifier">ViewF</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#viewF"><span class="hs-identifier">viewF</span></a></span><span>
+</span><span id="line-50"></span><span>
+</span><span id="line-51"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Back</span></span><span>
+</span><span id="line-52"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Insert</span></span><span>
+</span><span id="line-53"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#%7C%3E"><span class="hs-operator">(|&gt;)</span></a></span><span>
+</span><span id="line-54"></span><span>
+</span><span id="line-55"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** View</span></span><span>
+</span><span id="line-56"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#ViewB"><span class="hs-identifier">ViewB</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#viewB"><span class="hs-identifier">viewB</span></a></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Full queue</span></span><span>
+</span><span id="line-60"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Size</span></span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#null"><span class="hs-identifier">Data.Deque.Internal.null</span></a></span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#size"><span class="hs-identifier">Data.Deque.Internal.size</span></a></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Reverse</span></span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#reverse"><span class="hs-identifier">Data.Deque.Internal.reverse</span></a></span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Fold</span></span><span>
+</span><span id="line-68"></span><span>    </span><span class="annot"><span class="hs-comment">-- | === Left-to-right</span></span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#foldl"><span class="hs-identifier">Data.Deque.Internal.foldl</span></a></span><span>
+</span><span id="line-70"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#foldl%27"><span class="hs-identifier">Data.Deque.Internal.foldl'</span></a></span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span>    </span><span class="annot"><span class="hs-comment">-- | === Right-to-left</span></span><span>
+</span><span id="line-73"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#foldr"><span class="hs-identifier">Data.Deque.Internal.foldr</span></a></span><span>
+</span><span id="line-74"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#foldr%27"><span class="hs-identifier">Data.Deque.Internal.foldr'</span></a></span><span>
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span>    </span><span class="annot"><span class="hs-comment">-- | === Monoid</span></span><span>
+</span><span id="line-77"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#foldMap"><span class="hs-identifier">Data.Deque.Internal.foldMap</span></a></span><span>
+</span><span id="line-78"></span><span>
+</span><span id="line-79"></span><span>    </span><span class="annot"><span class="hs-comment">-- | === List</span></span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#toList"><span class="hs-identifier">toList</span></a></span><span>
+</span><span id="line-81"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#toListF"><span class="hs-identifier">toListF</span></a></span><span>
+</span><span id="line-82"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Deque.Internal.html#toListB"><span class="hs-identifier">toListB</span></a></span><span>
+</span><span id="line-83"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Data.Deque.Internal.html"><span class="hs-identifier">Data.Deque.Internal</span></a></span><span>
+</span><span id="line-86"></span></pre></body></html>

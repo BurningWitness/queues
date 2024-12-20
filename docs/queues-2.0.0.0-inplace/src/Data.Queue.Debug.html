@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="annot"><span class="hs-comment">{-| Safe functions for datatype introspection.
+ -}</span></span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Queue.Debug.html"><span class="hs-identifier">Data.Queue.Debug</span></a></span><span>
+</span><span id="line-5"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- * Show</span></span><span>
+</span><span id="line-6"></span><span>    </span><span class="annot"><a href="Data.Queue.Debug.html#showQueue"><span class="hs-identifier">showQueue</span></a></span><span>
+</span><span id="line-7"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Eq</span></span><span>
+</span><span id="line-8"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Debug.html#eqQueue"><span class="hs-identifier">eqQueue</span></a></span><span>
+</span><span id="line-9"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Validate</span></span><span>
+</span><span id="line-10"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Debug.html#Validity"><span class="hs-identifier">Validity</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Debug.html#Reason"><span class="hs-identifier">Reason</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Debug.html#validate"><span class="hs-identifier">validate</span></a></span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Data.List.Strict.Internal.html"><span class="hs-identifier">Data.List.Strict.Internal</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">List'</span></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Data.Queue.Internal.html"><span class="hs-identifier">Data.Queue.Internal</span></a></span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Functor.Classes</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Show</span></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-comment">-- | \(\mathcal{O}(n)\).</span><span>
+</span><span id="line-24"></span><span class="hs-comment">--   Shows the internal structure of the queue.</span><span>
+</span><span id="line-25"></span><span id="local-6989586621679049050"><span class="annot"><a href="Data.Queue.Debug.html#showQueue"><span class="hs-identifier hs-type">showQueue</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679049050"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ShowS</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#Queue"><span class="hs-identifier hs-type">Queue</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049050"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ShowS</span></span></span><span>
+</span><span id="line-26"></span><span id="showQueue"><span class="annot"><span class="annottext">showQueue :: forall a. (a -&gt; ShowS) -&gt; Queue a -&gt; ShowS
+</span><a href="Data.Queue.Debug.html#showQueue"><span class="hs-identifier hs-var hs-var">showQueue</span></a></span></span><span> </span><span id="local-6989586621679049084"><span class="annot"><span class="annottext">a -&gt; ShowS
+</span><a href="#local-6989586621679049084"><span class="hs-identifier hs-var">_shows</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Queue.Internal.html#Queue"><span class="hs-identifier hs-type">Queue</span></a></span><span> </span><span id="local-6989586621679049086"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049086"><span class="hs-identifier hs-var">fs</span></a></span></span><span> </span><span id="local-6989586621679049087"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049087"><span class="hs-identifier hs-var">rs</span></a></span></span><span> </span><span id="local-6989586621679049088"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049088"><span class="hs-identifier hs-var">sf</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-27"></span><span>  </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span class="hs-identifier hs-var">showString</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Queue\n  &quot;</span></span><span> </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; ShowS) -&gt; [a] -&gt; ShowS
+forall a. (a -&gt; ShowS) -&gt; [a] -&gt; ShowS
+</span><span class="hs-identifier hs-var">showListWith</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ShowS
+</span><a href="#local-6989586621679049084"><span class="hs-identifier hs-var">_shows</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049086"><span class="hs-identifier hs-var">fs</span></a></span><span>
+</span><span id="line-28"></span><span>     </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span class="hs-identifier hs-var">showString</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;\n  &quot;</span></span><span> </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; ShowS) -&gt; [a] -&gt; ShowS
+forall a. (a -&gt; ShowS) -&gt; [a] -&gt; ShowS
+</span><span class="hs-identifier hs-var">showListWith</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ShowS
+</span><a href="#local-6989586621679049084"><span class="hs-identifier hs-var">_shows</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">List' a -&gt; [a] -&gt; [a]
+forall a. List' a -&gt; [a] -&gt; [a]
+</span><a href="Data.List.Strict.Internal.html#appendToList"><span class="hs-identifier hs-var">List'.appendToList</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049087"><span class="hs-identifier hs-var">rs</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>     </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span class="hs-identifier hs-var">showString</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;\n  &quot;</span></span><span> </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; ShowS) -&gt; [a] -&gt; ShowS
+forall a. (a -&gt; ShowS) -&gt; [a] -&gt; ShowS
+</span><span class="hs-identifier hs-var">showListWith</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ShowS
+</span><a href="#local-6989586621679049084"><span class="hs-identifier hs-var">_shows</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049088"><span class="hs-identifier hs-var">sf</span></a></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-comment">-- | \(\mathcal{O}(n)\).</span><span>
+</span><span id="line-34"></span><span class="hs-comment">--   Checks whether the internal representations of two queues are equal.</span><span>
+</span><span id="line-35"></span><span id="local-6989586621679049061"><span id="local-6989586621679049062"><span class="annot"><a href="Data.Queue.Debug.html#eqQueue"><span class="hs-identifier hs-type">eqQueue</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679049061"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049062"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#Queue"><span class="hs-identifier hs-type">Queue</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049061"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#Queue"><span class="hs-identifier hs-type">Queue</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049062"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span></span><span>
+</span><span id="line-36"></span><span id="eqQueue"><span class="annot"><span class="annottext">eqQueue :: forall a b. (a -&gt; b -&gt; Bool) -&gt; Queue a -&gt; Queue b -&gt; Bool
+</span><a href="Data.Queue.Debug.html#eqQueue"><span class="hs-identifier hs-var hs-var">eqQueue</span></a></span></span><span> </span><span id="local-6989586621679049098"><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679049098"><span class="hs-identifier hs-var">eq</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Queue.Internal.html#Queue"><span class="hs-identifier hs-type">Queue</span></a></span><span> </span><span id="local-6989586621679049099"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049099"><span class="hs-identifier hs-var">fs</span></a></span></span><span> </span><span id="local-6989586621679049100"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049100"><span class="hs-identifier hs-var">rs</span></a></span></span><span> </span><span id="local-6989586621679049101"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049101"><span class="hs-identifier hs-var">sf</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Queue.Internal.html#Queue"><span class="hs-identifier hs-type">Queue</span></a></span><span> </span><span id="local-6989586621679049102"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679049102"><span class="hs-identifier hs-var">fs'</span></a></span></span><span> </span><span id="local-6989586621679049103"><span class="annot"><span class="annottext">List' b
+</span><a href="#local-6989586621679049103"><span class="hs-identifier hs-var">rs'</span></a></span></span><span> </span><span id="local-6989586621679049104"><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679049104"><span class="hs-identifier hs-var">sf'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-37"></span><span>  </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; Bool) -&gt; [a] -&gt; [b] -&gt; Bool
+forall a b. (a -&gt; b -&gt; Bool) -&gt; [a] -&gt; [b] -&gt; Bool
+forall (f :: * -&gt; *) a b.
+Eq1 f =&gt;
+(a -&gt; b -&gt; Bool) -&gt; f a -&gt; f b -&gt; Bool
+</span><span class="hs-identifier hs-var">liftEq</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679049098"><span class="hs-identifier hs-var">eq</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049099"><span class="hs-identifier hs-var">fs</span></a></span><span> </span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679049102"><span class="hs-identifier hs-var">fs'</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; Bool) -&gt; List' a -&gt; List' b -&gt; Bool
+forall a b. (a -&gt; b -&gt; Bool) -&gt; List' a -&gt; List' b -&gt; Bool
+forall (f :: * -&gt; *) a b.
+Eq1 f =&gt;
+(a -&gt; b -&gt; Bool) -&gt; f a -&gt; f b -&gt; Bool
+</span><span class="hs-identifier hs-var">liftEq</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679049098"><span class="hs-identifier hs-var">eq</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049100"><span class="hs-identifier hs-var">rs</span></a></span><span> </span><span class="annot"><span class="annottext">List' b
+</span><a href="#local-6989586621679049103"><span class="hs-identifier hs-var">rs'</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; Bool) -&gt; [a] -&gt; [b] -&gt; Bool
+forall a b. (a -&gt; b -&gt; Bool) -&gt; [a] -&gt; [b] -&gt; Bool
+forall (f :: * -&gt; *) a b.
+Eq1 f =&gt;
+(a -&gt; b -&gt; Bool) -&gt; f a -&gt; f b -&gt; Bool
+</span><span class="hs-identifier hs-var">liftEq</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; Bool
+</span><a href="#local-6989586621679049098"><span class="hs-identifier hs-var">eq</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049101"><span class="hs-identifier hs-var">sf</span></a></span><span> </span><span class="annot"><span class="annottext">[b]
+</span><a href="#local-6989586621679049104"><span class="hs-identifier hs-var">sf'</span></a></span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span class="annot"><span class="hs-comment">-- | Whether the queue is well-formed.</span></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">data</span><span> </span><span id="Validity"><span class="annot"><a href="Data.Queue.Debug.html#Validity"><span class="hs-identifier hs-var">Validity</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Valid"><span class="annot"><a href="Data.Queue.Debug.html#Valid"><span class="hs-identifier hs-var">Valid</span></a></span></span><span>
+</span><span id="line-44"></span><span>              </span><span class="hs-glyph">|</span><span> </span><span id="Invalid"><span class="annot"><a href="Data.Queue.Debug.html#Invalid"><span class="hs-identifier hs-var">Invalid</span></a></span></span><span> </span><span class="annot"><a href="Data.Queue.Debug.html#Reason"><span class="hs-identifier hs-type">Reason</span></a></span><span>
+</span><span id="line-45"></span><span>                </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679049110"><span id="local-6989586621679049116"><span id="local-6989586621679049120"><span class="annot"><span class="annottext">Int -&gt; Validity -&gt; ShowS
+[Validity] -&gt; ShowS
+Validity -&gt; String
+(Int -&gt; Validity -&gt; ShowS)
+-&gt; (Validity -&gt; String) -&gt; ([Validity] -&gt; ShowS) -&gt; Show Validity
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; Validity -&gt; ShowS
+showsPrec :: Int -&gt; Validity -&gt; ShowS
+$cshow :: Validity -&gt; String
+show :: Validity -&gt; String
+$cshowList :: [Validity] -&gt; ShowS
+showList :: [Validity] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679049125"><span id="local-6989586621679049132"><span class="annot"><span class="annottext">Validity -&gt; Validity -&gt; Bool
+(Validity -&gt; Validity -&gt; Bool)
+-&gt; (Validity -&gt; Validity -&gt; Bool) -&gt; Eq Validity
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: Validity -&gt; Validity -&gt; Bool
+== :: Validity -&gt; Validity -&gt; Bool
+$c/= :: Validity -&gt; Validity -&gt; Bool
+/= :: Validity -&gt; Validity -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span class="annot"><span class="hs-comment">-- | Reason for why the queue is considered malformed.</span></span><span>
+</span><span id="line-48"></span><span class="hs-keyword">data</span><span> </span><span id="Reason"><span class="annot"><a href="Data.Queue.Debug.html#Reason"><span class="hs-identifier hs-var">Reason</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-comment">-- | \(|R| + |S| \ne |F|\).</span></span><span>
+</span><span id="line-49"></span><span>              </span><span id="LengthMismatch"><span class="annot"><a href="Data.Queue.Debug.html#LengthMismatch"><span class="hs-identifier hs-var">LengthMismatch</span></a></span></span><span>
+</span><span id="line-50"></span><span>              </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679049138"><span id="local-6989586621679049140"><span id="local-6989586621679049143"><span class="annot"><span class="annottext">Int -&gt; Reason -&gt; ShowS
+[Reason] -&gt; ShowS
+Reason -&gt; String
+(Int -&gt; Reason -&gt; ShowS)
+-&gt; (Reason -&gt; String) -&gt; ([Reason] -&gt; ShowS) -&gt; Show Reason
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; Reason -&gt; ShowS
+showsPrec :: Int -&gt; Reason -&gt; ShowS
+$cshow :: Reason -&gt; String
+show :: Reason -&gt; String
+$cshowList :: [Reason] -&gt; ShowS
+showList :: [Reason] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679049146"><span id="local-6989586621679049148"><span class="annot"><span class="annottext">Reason -&gt; Reason -&gt; Bool
+(Reason -&gt; Reason -&gt; Bool)
+-&gt; (Reason -&gt; Reason -&gt; Bool) -&gt; Eq Reason
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: Reason -&gt; Reason -&gt; Bool
+== :: Reason -&gt; Reason -&gt; Bool
+$c/= :: Reason -&gt; Reason -&gt; Bool
+/= :: Reason -&gt; Reason -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>
+</span><span id="line-52"></span><span class="annot"><span class="hs-comment">-- | O(n). Checks whether the queue is well-formed.</span></span><span>
+</span><span id="line-53"></span><span id="local-6989586621679049075"><span class="annot"><a href="Data.Queue.Debug.html#validate"><span class="hs-identifier hs-type">validate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#Queue"><span class="hs-identifier hs-type">Queue</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049075"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Queue.Debug.html#Validity"><span class="hs-identifier hs-type">Validity</span></a></span></span><span>
+</span><span id="line-54"></span><span id="validate"><span class="annot"><span class="annottext">validate :: forall a. Queue a -&gt; Validity
+</span><a href="Data.Queue.Debug.html#validate"><span class="hs-identifier hs-var hs-var">validate</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Queue.Internal.html#Queue"><span class="hs-identifier hs-type">Queue</span></a></span><span> </span><span id="local-6989586621679049157"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049157"><span class="hs-identifier hs-var">fs</span></a></span></span><span> </span><span id="local-6989586621679049158"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049158"><span class="hs-identifier hs-var">rs</span></a></span></span><span> </span><span id="local-6989586621679049159"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049159"><span class="hs-identifier hs-var">sf</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int
+forall a. [a] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049157"><span class="hs-identifier hs-var">fs</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; Int
+forall a. [a] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049159"><span class="hs-identifier hs-var">sf</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">/=</span></span><span> </span><span class="annot"><span class="annottext">List' a -&gt; Int
+forall a. List' a -&gt; Int
+</span><a href="Data.List.Strict.Internal.html#length"><span class="hs-identifier hs-var">List'.length</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049158"><span class="hs-identifier hs-var">rs</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Reason -&gt; Validity
+</span><a href="Data.Queue.Debug.html#Invalid"><span class="hs-identifier hs-var">Invalid</span></a></span><span> </span><span class="annot"><span class="annottext">Reason
+</span><a href="Data.Queue.Debug.html#LengthMismatch"><span class="hs-identifier hs-var">LengthMismatch</span></a></span><span>
+</span><span id="line-56"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span>                                </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Validity
+</span><a href="Data.Queue.Debug.html#Valid"><span class="hs-identifier hs-var">Valid</span></a></span><span>
+</span><span id="line-57"></span></pre></body></html>

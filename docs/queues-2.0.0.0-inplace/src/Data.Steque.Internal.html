@@ -1,0 +1,639 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE BangPatterns
+           , PatternSynonyms
+           , ViewPatterns #-}</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html"><span class="hs-identifier">Data.Steque.Internal</span></a></span><span>
+</span><span id="line-6"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier">Steque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Empty"><span class="hs-identifier">Empty</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#%3A%3C%7C"><span class="hs-operator">(:&lt;|)</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#empty"><span class="hs-identifier">empty</span></a></span><span>
+</span><span id="line-9"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#singleton"><span class="hs-identifier">singleton</span></a></span><span>
+</span><span id="line-10"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#fromListF"><span class="hs-identifier">fromListF</span></a></span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#%3C%7C"><span class="hs-operator">(&lt;|)</span></a></span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#%7C%3E"><span class="hs-operator">(|&gt;)</span></a></span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#ViewF"><span class="hs-identifier">ViewF</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#viewF"><span class="hs-identifier">viewF</span></a></span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#null"><span class="hs-identifier">Data.Steque.Internal.null</span></a></span><span>
+</span><span id="line-18"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#size"><span class="hs-identifier">Data.Steque.Internal.size</span></a></span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#reverse"><span class="hs-identifier">Data.Steque.Internal.reverse</span></a></span><span>
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#map"><span class="hs-identifier">Data.Steque.Internal.map</span></a></span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#map%27"><span class="hs-identifier">map'</span></a></span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#foldl"><span class="hs-identifier">Data.Steque.Internal.foldl</span></a></span><span>
+</span><span id="line-26"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#foldl%27"><span class="hs-identifier">Data.Steque.Internal.foldl'</span></a></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#foldr"><span class="hs-identifier">Data.Steque.Internal.foldr</span></a></span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#foldr%27"><span class="hs-identifier">Data.Steque.Internal.foldr'</span></a></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#foldMap"><span class="hs-identifier">Data.Steque.Internal.foldMap</span></a></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#traverse"><span class="hs-identifier">Data.Steque.Internal.traverse</span></a></span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#toList"><span class="hs-identifier">toList</span></a></span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#toListF"><span class="hs-identifier">toListF</span></a></span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#toListB"><span class="hs-identifier">toListB</span></a></span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Data.List.Strict.Internal.html"><span class="hs-identifier">Data.List.Strict.Internal</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Strict.Internal.html#List%27"><span class="hs-identifier">List'</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="Data.List.Strict.Internal.html"><span class="hs-identifier">Data.List.Strict.Internal</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">List'</span></span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.DeepSeq</span></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Foldable</span></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Functor.Classes</span></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Show</span></span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="annot"><span class="hs-comment">-- | Spine-strict stack-ended queue.</span></span><span>
+</span><span id="line-51"></span><span class="hs-keyword">data</span><span> </span><span id="Steque"><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span></span><span> </span><span id="local-6989586621679049292"><span class="annot"><a href="#local-6989586621679049292"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-52"></span><span>       </span><span id="Steque"><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span></span><span>
+</span><span id="line-53"></span><span>         </span><span class="hs-glyph">!</span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Strict.Internal.html#List%27"><span class="hs-identifier hs-type">List'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049292"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-comment">-- ^ Front of the queue, in normal order.</span></span><span>
+</span><span id="line-54"></span><span>         </span><span class="hs-glyph">!</span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Strict.Internal.html#List%27"><span class="hs-identifier hs-type">List'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049292"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-comment">-- ^ Back of the queue, in reverse order.</span></span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="hs-pragma">{-# COMPLETE</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Empty"><span class="hs-pragma hs-type">Empty</span></a></span><span class="hs-pragma">,</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">:&lt;|</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(1)\). Bidirectional pattern synonym matching an empty queue.</span></span><span>
+</span><span id="line-59"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Empty"><span class="hs-identifier hs-type">Empty</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679049193"><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049193"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-60"></span><span class="hs-keyword">pattern</span><span> </span><span id="Empty"><span id="%24mEmpty"><span id="%24bEmpty"><span class="annot"><span class="annottext">$mEmpty :: forall {r} {a}. Steque a -&gt; ((# #) -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
+$bEmpty :: forall a. Steque a
+</span><a href="Data.Steque.Internal.html#Empty"><span class="hs-identifier hs-var hs-var hs-var">Empty</span></a></span></span></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#null"><span class="hs-identifier hs-type">Data.Steque.Internal.null</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">True</span></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-62"></span><span>    </span><span class="annot"><a href="Data.Steque.Internal.html#Empty"><span class="hs-identifier hs-var">Empty</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Steque a
+forall a. Steque a
+</span><a href="Data.Steque.Internal.html#empty"><span class="hs-identifier hs-var">empty</span></a></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="hs-keyword">infixr</span><span> </span><span class="hs-number">5</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#%3A%3C%7C"><span class="hs-operator hs-type">:&lt;|</span></a></span><span>
+</span><span id="line-65"></span><span class="hs-comment">-- | \(\mathcal{O}(1)\) construction and amortized match,</span><span>
+</span><span id="line-66"></span><span class="hs-comment">--   \(\mathcal{O}(n)\) worst-case match.</span><span>
+</span><span id="line-67"></span><span class="hs-comment">--   Bidirectional pattern synonym analyzing the front of a non-empty queue.</span><span>
+</span><span id="line-68"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#%3A%3C%7C"><span class="hs-operator hs-type">(:&lt;|)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span id="local-6989586621679049199"><span class="annot"><a href="#local-6989586621679049199"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049199"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049199"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-69"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="#local-6989586621679049381"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span id="%3A%3C%7C"><span id="%24m%3A%3C%7C"><span id="%24b%3A%3C%7C"><span class="annot"><span class="annottext">$m:&lt;| :: forall {r} {a}.
+Steque a -&gt; (a -&gt; Steque a -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
+$b:&lt;| :: forall a. a -&gt; Steque a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#%3A%3C%7C"><span class="hs-operator hs-var hs-var hs-var">:&lt;|</span></a></span></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679049384"><span class="hs-identifier hs-type">q</span></a></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#viewF"><span class="hs-identifier hs-type">viewF</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679049381"><span class="annot"><a href="#local-6989586621679049381"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#%3A%3C"><span class="hs-operator hs-type">:&lt;</span></a></span><span> </span><span id="local-6989586621679049384"><span class="annot"><a href="#local-6989586621679049384"><span class="hs-identifier hs-var">q</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-71"></span><span>    </span><span class="annot"><a href="Data.Steque.Internal.html#%3A%3C%7C"><span class="hs-operator hs-var">(:&lt;|)</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Steque a -&gt; Steque a
+forall a. a -&gt; Steque a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#%3C%7C"><span class="hs-operator hs-var">(&lt;|)</span></a></span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span class="annot"><span class="hs-comment">-- | Uses 'toListF'.</span></span><span>
+</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049207"><span id="local-6989586621679049389"><span id="local-6989586621679049393"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679049207"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049207"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-76"></span><span>  </span><span id="local-6989586621679049400"><span class="annot"><span class="annottext">showsPrec :: Int -&gt; Steque a -&gt; ShowS
+</span><a href="#local-6989586621679049400"><span class="hs-identifier hs-var hs-var hs-var">showsPrec</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; Steque a -&gt; ShowS
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; Steque a -&gt; ShowS
+forall (f :: * -&gt; *) a.
+Show1 f =&gt;
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; f a -&gt; ShowS
+</span><span class="hs-identifier hs-var">liftShowsPrec</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; a -&gt; ShowS
+forall a. Show a =&gt; Int -&gt; a -&gt; ShowS
+</span><span class="hs-identifier hs-var">showsPrec</span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; ShowS
+forall a. Show a =&gt; [a] -&gt; ShowS
+</span><span class="hs-identifier hs-var">showList</span></span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="annot"><span class="hs-comment">-- | Uses 'toListF'.</span></span><span>
+</span><span id="line-79"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049408"><span class="annot"><span class="hs-identifier hs-type">Show1</span></span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-80"></span><span>  </span><span id="local-6989586621679049411"><span class="annot"><span class="annottext">liftShowsPrec :: forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; ([a] -&gt; ShowS) -&gt; Int -&gt; Steque a -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var">liftShowsPrec</span></span></span><span> </span><span id="local-6989586621679049412"><span class="annot"><span class="annottext">Int -&gt; a -&gt; ShowS
+</span><a href="#local-6989586621679049412"><span class="hs-identifier hs-var">_shows</span></a></span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; ShowS
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; ShowS) -&gt; [a] -&gt; ShowS
+forall a. (a -&gt; ShowS) -&gt; [a] -&gt; ShowS
+</span><span class="hs-identifier hs-var">showListWith</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; a -&gt; ShowS
+</span><a href="#local-6989586621679049412"><span class="hs-identifier hs-var">_shows</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([a] -&gt; ShowS) -&gt; (Steque a -&gt; [a]) -&gt; Steque a -&gt; ShowS
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Steque a -&gt; [a]
+forall a. Steque a -&gt; [a]
+</span><a href="Data.Steque.Internal.html#toListF"><span class="hs-identifier hs-var">toListF</span></a></span><span>
+</span><span id="line-81"></span><span>
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049222"><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="#local-6989586621679049222"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049222"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-84"></span><span>  </span><span id="local-6989586621679049422"><span class="annot"><span class="annottext">rnf :: Steque a -&gt; ()
+</span><a href="#local-6989586621679049422"><span class="hs-identifier hs-var hs-var hs-var">rnf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; ()) -&gt; Steque a -&gt; ()
+forall a. (a -&gt; ()) -&gt; Steque a -&gt; ()
+forall (f :: * -&gt; *) a. NFData1 f =&gt; (a -&gt; ()) -&gt; f a -&gt; ()
+</span><span class="hs-identifier hs-var">liftRnf</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ()
+forall a. NFData a =&gt; a -&gt; ()
+</span><span class="hs-identifier hs-var">rnf</span></span><span>
+</span><span id="line-85"></span><span>
+</span><span id="line-86"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NFData1</span></span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-87"></span><span>  </span><span id="local-6989586621679049432"><span class="annot"><span class="annottext">liftRnf :: forall a. (a -&gt; ()) -&gt; Steque a -&gt; ()
+</span><span class="hs-identifier hs-var hs-var hs-var">liftRnf</span></span></span><span> </span><span id="local-6989586621679049433"><span class="annot"><span class="annottext">a -&gt; ()
+</span><a href="#local-6989586621679049433"><span class="hs-identifier hs-var">nf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049434"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049434"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049435"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049435"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; ()) -&gt; List' a -&gt; ()
+forall a. (a -&gt; ()) -&gt; List' a -&gt; ()
+forall (f :: * -&gt; *) a. NFData1 f =&gt; (a -&gt; ()) -&gt; f a -&gt; ()
+</span><span class="hs-identifier hs-var">liftRnf</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ()
+</span><a href="#local-6989586621679049433"><span class="hs-identifier hs-var">nf</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049434"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">() -&gt; () -&gt; ()
+forall a b. a -&gt; b -&gt; b
+</span><span class="hs-operator hs-var">`seq`</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; ()) -&gt; List' a -&gt; ()
+forall a. (a -&gt; ()) -&gt; List' a -&gt; ()
+forall (f :: * -&gt; *) a. NFData1 f =&gt; (a -&gt; ()) -&gt; f a -&gt; ()
+</span><span class="hs-identifier hs-var">liftRnf</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; ()
+</span><a href="#local-6989586621679049433"><span class="hs-identifier hs-var">nf</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049435"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span>
+</span><span id="line-90"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049438"><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-91"></span><span>  </span><span id="local-6989586621679049442"><span class="annot"><span class="annottext">fmap :: forall a b. (a -&gt; b) -&gt; Steque a -&gt; Steque b
+</span><span class="hs-identifier hs-var hs-var hs-var">fmap</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; Steque a -&gt; Steque b
+forall a b. (a -&gt; b) -&gt; Steque a -&gt; Steque b
+</span><a href="Data.Steque.Internal.html#map"><span class="hs-identifier hs-var">Data.Steque.Internal.map</span></a></span><span>
+</span><span id="line-92"></span><span>
+</span><span id="line-93"></span><span class="annot"><span class="hs-comment">-- | The order of entries is arbitrary.</span></span><span>
+</span><span id="line-94"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049444"><span id="local-6989586621679049451"><span id="local-6989586621679049460"><span id="local-6989586621679049463"><span id="local-6989586621679049469"><span id="local-6989586621679049474"><span id="local-6989586621679049479"><span id="local-6989586621679049484"><span id="local-6989586621679049489"><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span></span></span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-95"></span><span>  </span><span id="local-6989586621679049494"><span class="annot"><span class="annottext">foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="#local-6989586621679049494"><span class="hs-identifier hs-var hs-var hs-var">foldl</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b -&gt; a -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="Data.Steque.Internal.html#foldl"><span class="hs-identifier hs-var">Data.Steque.Internal.foldl</span></a></span><span>
+</span><span id="line-96"></span><span>  </span><span id="local-6989586621679049496"><span class="annot"><span class="annottext">foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="#local-6989586621679049496"><span class="hs-identifier hs-var hs-var hs-var">foldl'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(b -&gt; a -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="Data.Steque.Internal.html#foldl"><span class="hs-identifier hs-var">Data.Steque.Internal.foldl</span></a></span><span>
+</span><span id="line-97"></span><span>
+</span><span id="line-98"></span><span>  </span><span id="local-6989586621679049498"><span class="annot"><span class="annottext">foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="#local-6989586621679049498"><span class="hs-identifier hs-var hs-var hs-var">foldr</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="Data.Steque.Internal.html#foldr"><span class="hs-identifier hs-var">Data.Steque.Internal.foldr</span></a></span><span>
+</span><span id="line-99"></span><span>  </span><span id="local-6989586621679049500"><span class="annot"><span class="annottext">foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="#local-6989586621679049500"><span class="hs-identifier hs-var hs-var hs-var">foldr'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="Data.Steque.Internal.html#foldr%27"><span class="hs-identifier hs-var">Data.Steque.Internal.foldr'</span></a></span><span>
+</span><span id="line-100"></span><span>
+</span><span id="line-101"></span><span>  </span><span id="local-6989586621679049504"><span class="annot"><span class="annottext">foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Steque a -&gt; m
+</span><a href="#local-6989586621679049504"><span class="hs-identifier hs-var hs-var hs-var">foldMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; Steque a -&gt; m
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Steque a -&gt; m
+</span><a href="Data.Steque.Internal.html#foldMap"><span class="hs-identifier hs-var">Data.Steque.Internal.foldMap</span></a></span><span>
+</span><span id="line-102"></span><span>
+</span><span id="line-103"></span><span>  </span><span id="local-6989586621679049506"><span class="annot"><span class="annottext">null :: forall a. Steque a -&gt; Bool
+</span><a href="#local-6989586621679049506"><span class="hs-identifier hs-var hs-var hs-var">null</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Steque a -&gt; Bool
+forall a. Steque a -&gt; Bool
+</span><a href="Data.Steque.Internal.html#null"><span class="hs-identifier hs-var">Data.Steque.Internal.null</span></a></span><span>
+</span><span id="line-104"></span><span>
+</span><span id="line-105"></span><span>  </span><span id="local-6989586621679049508"><span class="annot"><span class="annottext">toList :: forall a. Steque a -&gt; [a]
+</span><a href="#local-6989586621679049508"><span class="hs-identifier hs-var hs-var hs-var">toList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Steque a -&gt; [a]
+forall a. Steque a -&gt; [a]
+</span><a href="Data.Steque.Internal.html#toList"><span class="hs-identifier hs-var">Data.Steque.Internal.toList</span></a></span><span>
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span>  </span><span id="local-6989586621679049510"><span class="annot"><span class="annottext">length :: forall a. Steque a -&gt; Int
+</span><a href="#local-6989586621679049510"><span class="hs-identifier hs-var hs-var hs-var">length</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Steque a -&gt; Int
+forall a. Steque a -&gt; Int
+</span><a href="Data.Steque.Internal.html#size"><span class="hs-identifier hs-var">Data.Steque.Internal.size</span></a></span><span>
+</span><span id="line-108"></span><span>
+</span><span id="line-109"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049518"><span id="local-6989586621679049524"><span id="local-6989586621679049529"><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-110"></span><span>  </span><span id="local-6989586621679049536"><span class="annot"><span class="annottext">traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Steque a -&gt; f (Steque b)
+</span><a href="#local-6989586621679049536"><span class="hs-identifier hs-var hs-var hs-var">traverse</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; f b) -&gt; Steque a -&gt; f (Steque b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Steque a -&gt; f (Steque b)
+</span><a href="Data.Steque.Internal.html#traverse"><span class="hs-identifier hs-var">Data.Steque.Internal.traverse</span></a></span><span>
+</span><span id="line-111"></span><span>
+</span><span id="line-112"></span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(1)\). Empty queue.</span></span><span>
+</span><span id="line-115"></span><span id="local-6989586621679049538"><span class="annot"><a href="Data.Steque.Internal.html#empty"><span class="hs-identifier hs-type">empty</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049538"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-116"></span><span id="empty"><span class="annot"><span class="annottext">empty :: forall a. Steque a
+</span><a href="Data.Steque.Internal.html#empty"><span class="hs-identifier hs-var hs-var">empty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a -&gt; List' a -&gt; Steque a
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+forall a. List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+forall a. List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span>
+</span><span id="line-117"></span><span>
+</span><span id="line-118"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(1)\). Queue with a single element.</span></span><span>
+</span><span id="line-119"></span><span id="local-6989586621679049294"><span class="annot"><a href="Data.Steque.Internal.html#singleton"><span class="hs-identifier hs-type">singleton</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679049294"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049294"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-120"></span><span id="singleton"><span class="annot"><span class="annottext">singleton :: forall a. a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#singleton"><span class="hs-identifier hs-var hs-var">singleton</span></a></span></span><span> </span><span id="local-6989586621679049540"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679049540"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a -&gt; List' a -&gt; Steque a
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; List' a -&gt; List' a
+forall a. a -&gt; List' a -&gt; List' a
+</span><a href="Data.List.Strict.Internal.html#Cons%27"><span class="hs-identifier hs-var">Cons'</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679049540"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+forall a. List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">List' a
+forall a. List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span>
+</span><span id="line-121"></span><span>
+</span><span id="line-122"></span><span class="hs-comment">-- | \(\mathcal{O}(n)\). Construct a queue from a list.</span><span>
+</span><span id="line-123"></span><span class="hs-comment">--   Element order matches list order, with</span><span>
+</span><span id="line-124"></span><span class="hs-comment">--   the front of the queue corresponding to the head of the list.</span><span>
+</span><span id="line-125"></span><span id="local-6989586621679049296"><span class="annot"><a href="Data.Steque.Internal.html#fromListF"><span class="hs-identifier hs-type">fromListF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679049296"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049296"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-126"></span><span id="fromListF"><span class="annot"><span class="annottext">fromListF :: forall a. [a] -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#fromListF"><span class="hs-identifier hs-var hs-var">fromListF</span></a></span></span><span> </span><span id="local-6989586621679049542"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049542"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a -&gt; List' a -&gt; Steque a
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a] -&gt; List' a
+forall a. [a] -&gt; List' a
+</span><a href="Data.List.Strict.Internal.html#fromList"><span class="hs-identifier hs-var">List'.fromList</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679049542"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">List' a
+forall a. List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span>
+</span><span id="line-127"></span><span>
+</span><span id="line-128"></span><span>
+</span><span id="line-129"></span><span>
+</span><span id="line-130"></span><span class="hs-keyword">infixr</span><span> </span><span class="hs-number">5</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#%3C%7C"><span class="hs-operator hs-type">&lt;|</span></a></span><span>
+</span><span id="line-131"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(1)\). Add an element to the front of the queue.</span></span><span>
+</span><span id="line-132"></span><span id="local-6989586621679049544"><span class="annot"><a href="Data.Steque.Internal.html#%3C%7C"><span class="hs-operator hs-type">(&lt;|)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679049544"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049544"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049544"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-133"></span><span id="%3C%7C"><span class="annot"><span class="annottext">&lt;| :: forall a. a -&gt; Steque a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#%3C%7C"><span class="hs-operator hs-var hs-var">(&lt;|)</span></a></span></span><span> </span><span id="local-6989586621679049545"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679049545"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049546"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049546"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049547"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049547"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a -&gt; List' a -&gt; Steque a
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; List' a -&gt; List' a
+forall a. a -&gt; List' a -&gt; List' a
+</span><a href="Data.List.Strict.Internal.html#Cons%27"><span class="hs-identifier hs-var">Cons'</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679049545"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049546"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049547"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-134"></span><span>
+</span><span id="line-135"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">5</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#%7C%3E"><span class="hs-operator hs-type">|&gt;</span></a></span><span>
+</span><span id="line-136"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(1)\). Add an element to the back of the queue.</span></span><span>
+</span><span id="line-137"></span><span id="local-6989586621679049300"><span class="annot"><a href="Data.Steque.Internal.html#%7C%3E"><span class="hs-operator hs-type">(|&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049300"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049300"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049300"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-138"></span><span id="%7C%3E"><span class="annot"><span class="annottext">|&gt; :: forall a. Steque a -&gt; a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#%7C%3E"><span class="hs-operator hs-var hs-var">(|&gt;)</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049548"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049548"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049549"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049549"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679049550"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679049550"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a -&gt; List' a -&gt; Steque a
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049548"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; List' a -&gt; List' a
+forall a. a -&gt; List' a -&gt; List' a
+</span><a href="Data.List.Strict.Internal.html#Cons%27"><span class="hs-identifier hs-var">Cons'</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679049550"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049549"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-139"></span><span>
+</span><span id="line-140"></span><span>
+</span><span id="line-141"></span><span>
+</span><span id="line-142"></span><span class="annot"><span class="hs-comment">-- | View of the front of the queue.</span></span><span>
+</span><span id="line-143"></span><span class="hs-keyword">data</span><span> </span><span id="ViewF"><span class="annot"><a href="Data.Steque.Internal.html#ViewF"><span class="hs-identifier hs-var">ViewF</span></a></span></span><span> </span><span id="local-6989586621679049308"><span class="annot"><a href="#local-6989586621679049308"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679049308"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span id="%3A%3C"><span class="annot"><a href="Data.Steque.Internal.html#%3A%3C"><span class="hs-operator hs-var">:&lt;</span></a></span></span><span> </span><span class="hs-glyph">!</span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049308"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-144"></span><span>               </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679049553"><span id="local-6989586621679049559"><span id="local-6989586621679049563"><span class="annot"><span class="annottext">Int -&gt; ViewF a -&gt; ShowS
+[ViewF a] -&gt; ShowS
+ViewF a -&gt; String
+(Int -&gt; ViewF a -&gt; ShowS)
+-&gt; (ViewF a -&gt; String) -&gt; ([ViewF a] -&gt; ShowS) -&gt; Show (ViewF a)
+forall a. Show a =&gt; Int -&gt; ViewF a -&gt; ShowS
+forall a. Show a =&gt; [ViewF a] -&gt; ShowS
+forall a. Show a =&gt; ViewF a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; ViewF a -&gt; ShowS
+showsPrec :: Int -&gt; ViewF a -&gt; ShowS
+$cshow :: forall a. Show a =&gt; ViewF a -&gt; String
+show :: ViewF a -&gt; String
+$cshowList :: forall a. Show a =&gt; [ViewF a] -&gt; ShowS
+showList :: [ViewF a] -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span>
+</span><span id="line-145"></span><span>
+</span><span id="line-146"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#viewF"><span class="hs-pragma hs-type">viewF</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-147"></span><span class="hs-comment">-- | \(\mathcal{O}(1)\) amortized, \(\mathcal{O}(n)\) worst-case.</span><span>
+</span><span id="line-148"></span><span class="hs-comment">--   Analyze the front of the queue.</span><span>
+</span><span id="line-149"></span><span id="local-6989586621679049202"><span class="annot"><a href="Data.Steque.Internal.html#viewF"><span class="hs-identifier hs-type">viewF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049202"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#ViewF"><span class="hs-identifier hs-type">ViewF</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049202"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-150"></span><span id="viewF"><span class="annot"><span class="annottext">viewF :: forall a. Steque a -&gt; Maybe (ViewF a)
+</span><a href="Data.Steque.Internal.html#viewF"><span class="hs-identifier hs-var hs-var">viewF</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049565"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049565"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049566"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049566"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-151"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049565"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-152"></span><span>    </span><span class="annot"><a href="Data.List.Strict.Internal.html#Cons%27"><span class="hs-identifier hs-type">Cons'</span></a></span><span> </span><span id="local-6989586621679049567"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679049567"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679049568"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049568"><span class="hs-identifier hs-var">xx</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ViewF a -&gt; Maybe (ViewF a)
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(ViewF a -&gt; Maybe (ViewF a)) -&gt; ViewF a -&gt; Maybe (ViewF a)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679049567"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Steque a -&gt; ViewF a
+forall a. a -&gt; Steque a -&gt; ViewF a
+</span><a href="Data.Steque.Internal.html#%3A%3C"><span class="hs-operator hs-var">:&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">List' a -&gt; List' a -&gt; Steque a
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049568"><span class="hs-identifier hs-var">xx</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049566"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-153"></span><span>    </span><span class="annot"><span class="annottext">List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span>       </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-154"></span><span>      </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049566"><span class="hs-identifier hs-var">ys</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-155"></span><span>        </span><span class="annot"><span class="annottext">List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span>       </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (ViewF a)
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-156"></span><span>        </span><span class="annot"><a href="Data.List.Strict.Internal.html#Cons%27"><span class="hs-identifier hs-type">Cons'</span></a></span><span> </span><span id="local-6989586621679049570"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679049570"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span id="local-6989586621679049571"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049571"><span class="hs-identifier hs-var">yy</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ViewF a -&gt; Maybe (ViewF a)
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(ViewF a -&gt; Maybe (ViewF a)) -&gt; ViewF a -&gt; Maybe (ViewF a)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$!</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; List' a -&gt; ViewF a
+forall a. a -&gt; List' a -&gt; ViewF a
+</span><a href="Data.Steque.Internal.html#viewF1"><span class="hs-identifier hs-var">viewF1</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679049570"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049571"><span class="hs-identifier hs-var">yy</span></a></span><span>
+</span><span id="line-157"></span><span>
+</span><span id="line-158"></span><span id="local-6989586621679049309"><span class="annot"><a href="Data.Steque.Internal.html#viewF1"><span class="hs-identifier hs-type">viewF1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679049309"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.List.Strict.Internal.html#List%27"><span class="hs-identifier hs-type">List'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049309"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#ViewF"><span class="hs-identifier hs-type">ViewF</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049309"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-159"></span><span id="viewF1"><span class="annot"><span class="annottext">viewF1 :: forall a. a -&gt; List' a -&gt; ViewF a
+</span><a href="Data.Steque.Internal.html#viewF1"><span class="hs-identifier hs-var hs-var">viewF1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a -&gt; a -&gt; List' a -&gt; ViewF a
+forall {t}. List' t -&gt; t -&gt; List' t -&gt; ViewF t
+</span><a href="#local-6989586621679049573"><span class="hs-identifier hs-var">revAppend1</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+forall a. List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span>
+</span><span id="line-160"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-161"></span><span>    </span><span id="local-6989586621679049573"><span class="annot"><span class="annottext">revAppend1 :: List' t -&gt; t -&gt; List' t -&gt; ViewF t
+</span><a href="#local-6989586621679049573"><span class="hs-identifier hs-var hs-var">revAppend1</span></a></span></span><span> </span><span id="local-6989586621679049574"><span class="annot"><span class="annottext">List' t
+</span><a href="#local-6989586621679049574"><span class="hs-identifier hs-var">rs</span></a></span></span><span> </span><span id="local-6989586621679049575"><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679049575"><span class="hs-identifier hs-var">v</span></a></span></span><span>  </span><span class="annot"><span class="annottext">List' t
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span>        </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679049575"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">t -&gt; Steque t -&gt; ViewF t
+forall a. a -&gt; Steque a -&gt; ViewF a
+</span><a href="Data.Steque.Internal.html#%3A%3C"><span class="hs-operator hs-var">:&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">List' t -&gt; List' t -&gt; Steque t
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="annot"><span class="annottext">List' t
+</span><a href="#local-6989586621679049574"><span class="hs-identifier hs-var">rs</span></a></span><span> </span><span class="annot"><span class="annottext">List' t
+forall a. List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span>
+</span><span id="line-162"></span><span>    </span><span class="annot"><a href="#local-6989586621679049573"><span class="hs-identifier hs-var">revAppend1</span></a></span><span> </span><span id="local-6989586621679049576"><span class="annot"><span class="annottext">List' t
+</span><a href="#local-6989586621679049576"><span class="hs-identifier hs-var">rs</span></a></span></span><span> </span><span id="local-6989586621679049577"><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679049577"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.List.Strict.Internal.html#Cons%27"><span class="hs-identifier hs-type">Cons'</span></a></span><span> </span><span id="local-6989586621679049578"><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679049578"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span id="local-6989586621679049579"><span class="annot"><span class="annottext">List' t
+</span><a href="#local-6989586621679049579"><span class="hs-identifier hs-var">us</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' t -&gt; t -&gt; List' t -&gt; ViewF t
+</span><a href="#local-6989586621679049573"><span class="hs-identifier hs-var">revAppend1</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">t -&gt; List' t -&gt; List' t
+forall a. a -&gt; List' a -&gt; List' a
+</span><a href="Data.List.Strict.Internal.html#Cons%27"><span class="hs-identifier hs-var">Cons'</span></a></span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679049577"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">List' t
+</span><a href="#local-6989586621679049576"><span class="hs-identifier hs-var">rs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t
+</span><a href="#local-6989586621679049578"><span class="hs-identifier hs-var">u</span></a></span><span> </span><span class="annot"><span class="annottext">List' t
+</span><a href="#local-6989586621679049579"><span class="hs-identifier hs-var">us</span></a></span><span>
+</span><span id="line-163"></span><span>
+</span><span id="line-164"></span><span>
+</span><span id="line-165"></span><span>
+</span><span id="line-166"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(1)\). Check if the queue is empty.</span></span><span>
+</span><span id="line-167"></span><span id="local-6989586621679049196"><span class="annot"><a href="Data.Steque.Internal.html#null"><span class="hs-identifier hs-type">null</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049196"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span><span>
+</span><span id="line-168"></span><span id="null"><span class="annot"><span class="annottext">null :: forall a. Steque a -&gt; Bool
+</span><a href="Data.Steque.Internal.html#null"><span class="hs-identifier hs-var hs-var">null</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="Data.List.Strict.Internal.html#Nil%27"><span class="hs-identifier hs-var">Nil'</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-169"></span><span class="annot"><a href="Data.Steque.Internal.html#null"><span class="hs-identifier hs-var">null</span></a></span><span> </span><span class="annot"><span class="annottext">Steque a
+</span><span class="hs-identifier">_</span></span><span>                  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-170"></span><span>
+</span><span id="line-171"></span><span>
+</span><span id="line-172"></span><span>
+</span><span id="line-173"></span><span class="hs-comment">-- | \(\mathcal{O}(n)\).</span><span>
+</span><span id="line-174"></span><span class="hs-comment">--   Calculate the number of elements stored in the queue.</span><span>
+</span><span id="line-175"></span><span class="hs-comment">--   The returned number is guaranteed to be non-negative.</span><span>
+</span><span id="line-176"></span><span id="local-6989586621679049580"><span class="annot"><a href="Data.Steque.Internal.html#size"><span class="hs-identifier hs-type">size</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049580"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span></span><span>
+</span><span id="line-177"></span><span id="size"><span class="annot"><span class="annottext">size :: forall a. Steque a -&gt; Int
+</span><a href="Data.Steque.Internal.html#size"><span class="hs-identifier hs-var hs-var">size</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049583"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049583"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049584"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049584"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a -&gt; Int
+forall a. List' a -&gt; Int
+</span><a href="Data.List.Strict.Internal.html#length"><span class="hs-identifier hs-var">List'.length</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049583"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">List' a -&gt; Int
+forall a. List' a -&gt; Int
+</span><a href="Data.List.Strict.Internal.html#length"><span class="hs-identifier hs-var">List'.length</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049584"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-178"></span><span>
+</span><span id="line-179"></span><span>
+</span><span id="line-180"></span><span>
+</span><span id="line-181"></span><span class="hs-comment">-- | \(\mathcal{O}(1)\). Reverse the element order.</span><span>
+</span><span id="line-182"></span><span class="hs-comment">--</span><span>
+</span><span id="line-183"></span><span class="hs-comment">--   Amortized time complexity for 'viewF' when used on a reversed queue is no longer</span><span>
+</span><span id="line-184"></span><span class="hs-comment">--   \(\mathcal{O}(1)\), deteriorating to \(\mathcal{O}(n)\) in the extreme case of</span><span>
+</span><span id="line-185"></span><span class="hs-comment">--   using the steque as a double-ended queue.</span><span>
+</span><span id="line-186"></span><span id="local-6989586621679049316"><span class="annot"><a href="Data.Steque.Internal.html#reverse"><span class="hs-identifier hs-type">reverse</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049316"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049316"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-187"></span><span id="reverse"><span class="annot"><span class="annottext">reverse :: forall a. Steque a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#reverse"><span class="hs-identifier hs-var hs-var">reverse</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049587"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049587"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049588"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049588"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a -&gt; List' a -&gt; Steque a
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049588"><span class="hs-identifier hs-var">ys</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049587"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-188"></span><span>
+</span><span id="line-189"></span><span>
+</span><span id="line-190"></span><span>
+</span><span id="line-191"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(n)\). Apply a function to every element in the queue.</span></span><span>
+</span><span id="line-192"></span><span id="local-6989586621679049589"><span id="local-6989586621679049590"><span class="annot"><a href="Data.Steque.Internal.html#map"><span class="hs-identifier hs-type">map</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679049589"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049590"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049589"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049590"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-193"></span><span id="map"><span class="annot"><span class="annottext">map :: forall a b. (a -&gt; b) -&gt; Steque a -&gt; Steque b
+</span><a href="Data.Steque.Internal.html#map"><span class="hs-identifier hs-var hs-var">map</span></a></span></span><span> </span><span id="local-6989586621679049591"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679049591"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049592"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049592"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049593"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049593"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' b -&gt; List' b -&gt; Steque b
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; List' a -&gt; List' b
+forall a b. (a -&gt; b) -&gt; List' a -&gt; List' b
+</span><a href="Data.List.Strict.Internal.html#map"><span class="hs-identifier hs-var">List'.map</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679049591"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049592"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; List' a -&gt; List' b
+forall a b. (a -&gt; b) -&gt; List' a -&gt; List' b
+</span><a href="Data.List.Strict.Internal.html#map"><span class="hs-identifier hs-var">List'.map</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679049591"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049593"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-194"></span><span>
+</span><span id="line-195"></span><span class="hs-comment">-- | \(\mathcal{O}(n)\). Apply a function to every element in the queue and</span><span>
+</span><span id="line-196"></span><span class="hs-comment">--   evaluate every resulting element to weak head normal form.</span><span>
+</span><span id="line-197"></span><span id="local-6989586621679049595"><span id="local-6989586621679049596"><span class="annot"><a href="Data.Steque.Internal.html#map%27"><span class="hs-identifier hs-type">map'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679049595"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049596"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049595"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049596"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-198"></span><span id="map%27"><span class="annot"><span class="annottext">map' :: forall a b. (a -&gt; b) -&gt; Steque a -&gt; Steque b
+</span><a href="Data.Steque.Internal.html#map%27"><span class="hs-identifier hs-var hs-var">map'</span></a></span></span><span> </span><span id="local-6989586621679049597"><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679049597"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049598"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049598"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049599"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049599"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' b -&gt; List' b -&gt; Steque b
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; List' a -&gt; List' b
+forall a b. (a -&gt; b) -&gt; List' a -&gt; List' b
+</span><a href="Data.List.Strict.Internal.html#map%27"><span class="hs-identifier hs-var">List'.map'</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679049597"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049598"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b) -&gt; List' a -&gt; List' b
+forall a b. (a -&gt; b) -&gt; List' a -&gt; List' b
+</span><a href="Data.List.Strict.Internal.html#map%27"><span class="hs-identifier hs-var">List'.map'</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; b
+</span><a href="#local-6989586621679049597"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049599"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-199"></span><span>
+</span><span id="line-200"></span><span>
+</span><span id="line-201"></span><span>
+</span><span id="line-202"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(n_R)\). Fold the queue left-to-right.</span></span><span>
+</span><span id="line-203"></span><span id="local-6989586621679049601"><span id="local-6989586621679049602"><span class="annot"><a href="Data.Steque.Internal.html#foldl"><span class="hs-identifier hs-type">foldl</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679049601"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049602"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049601"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049601"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049602"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049601"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-204"></span><span id="foldl"><span class="annot"><span class="annottext">foldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="Data.Steque.Internal.html#foldl"><span class="hs-identifier hs-var hs-var">foldl</span></a></span></span><span> </span><span id="local-6989586621679049603"><span class="annot"><span class="annottext">b -&gt; a -&gt; b
+</span><a href="#local-6989586621679049603"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679049604"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679049604"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049605"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049605"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049606"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049606"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(b -&gt; a -&gt; b) -&gt; b -&gt; List' a -&gt; b
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; List' a -&gt; b
+</span><a href="Data.List.Strict.Internal.html#foldl"><span class="hs-identifier hs-var">List'.foldl</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; a -&gt; b
+</span><a href="#local-6989586621679049603"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(b -&gt; a -&gt; b) -&gt; b -&gt; List' a -&gt; b
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; List' a -&gt; b
+</span><a href="Data.List.Strict.Internal.html#foldl"><span class="hs-identifier hs-var">List'.foldl</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; a -&gt; b
+</span><a href="#local-6989586621679049603"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679049604"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049605"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049606"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-205"></span><span>
+</span><span id="line-206"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(n)\). Fold the queue left-to-right with a strict accumulator.</span></span><span>
+</span><span id="line-207"></span><span id="local-6989586621679049608"><span id="local-6989586621679049609"><span class="annot"><a href="Data.Steque.Internal.html#foldl%27"><span class="hs-identifier hs-type">foldl'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679049608"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049609"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049608"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049608"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049609"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049608"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-208"></span><span id="foldl%27"><span class="annot"><span class="annottext">foldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="Data.Steque.Internal.html#foldl%27"><span class="hs-identifier hs-var hs-var">foldl'</span></a></span></span><span> </span><span id="local-6989586621679049610"><span class="annot"><span class="annottext">b -&gt; a -&gt; b
+</span><a href="#local-6989586621679049610"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679049611"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679049611"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049612"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049612"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049613"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049613"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(b -&gt; a -&gt; b) -&gt; b -&gt; List' a -&gt; b
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; List' a -&gt; b
+</span><a href="Data.List.Strict.Internal.html#foldl%27"><span class="hs-identifier hs-var">List'.foldl'</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; a -&gt; b
+</span><a href="#local-6989586621679049610"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(b -&gt; a -&gt; b) -&gt; b -&gt; List' a -&gt; b
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; List' a -&gt; b
+</span><a href="Data.List.Strict.Internal.html#foldl%27"><span class="hs-identifier hs-var">List'.foldl'</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; a -&gt; b
+</span><a href="#local-6989586621679049610"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679049611"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049612"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049613"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-209"></span><span>
+</span><span id="line-210"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(n_L)\). Fold the queue right-to-left.</span></span><span>
+</span><span id="line-211"></span><span id="local-6989586621679049615"><span id="local-6989586621679049616"><span class="annot"><a href="Data.Steque.Internal.html#foldr"><span class="hs-identifier hs-type">foldr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679049615"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049616"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049616"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049616"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049615"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049616"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-212"></span><span id="foldr"><span class="annot"><span class="annottext">foldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="Data.Steque.Internal.html#foldr"><span class="hs-identifier hs-var hs-var">foldr</span></a></span></span><span> </span><span id="local-6989586621679049617"><span class="annot"><span class="annottext">a -&gt; b -&gt; b
+</span><a href="#local-6989586621679049617"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679049618"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679049618"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049619"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049619"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049620"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049620"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; b) -&gt; b -&gt; List' a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; List' a -&gt; b
+</span><a href="Data.List.Strict.Internal.html#foldr"><span class="hs-identifier hs-var">List'.foldr</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; b
+</span><a href="#local-6989586621679049617"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b -&gt; b) -&gt; b -&gt; List' a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; List' a -&gt; b
+</span><a href="Data.List.Strict.Internal.html#foldr"><span class="hs-identifier hs-var">List'.foldr</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; b
+</span><a href="#local-6989586621679049617"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679049618"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049620"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049619"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-213"></span><span>
+</span><span id="line-214"></span><span class="annot"><span class="hs-comment">-- | \(\mathcal{O}(n)\). Fold the queue right-to-left with a strict accumulator.</span></span><span>
+</span><span id="line-215"></span><span id="local-6989586621679049622"><span id="local-6989586621679049623"><span class="annot"><a href="Data.Steque.Internal.html#foldr%27"><span class="hs-identifier hs-type">foldr'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679049622"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049623"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049623"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049623"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049622"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049623"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-216"></span><span id="foldr%27"><span class="annot"><span class="annottext">foldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Steque a -&gt; b
+</span><a href="Data.Steque.Internal.html#foldr%27"><span class="hs-identifier hs-var hs-var">foldr'</span></a></span></span><span> </span><span id="local-6989586621679049624"><span class="annot"><span class="annottext">a -&gt; b -&gt; b
+</span><a href="#local-6989586621679049624"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679049625"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679049625"><span class="hs-identifier hs-var">z</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049626"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049626"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049627"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049627"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(a -&gt; b -&gt; b) -&gt; b -&gt; List' a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; List' a -&gt; b
+</span><a href="Data.List.Strict.Internal.html#foldr%27"><span class="hs-identifier hs-var">List'.foldr'</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; b
+</span><a href="#local-6989586621679049624"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; b -&gt; b) -&gt; b -&gt; List' a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; List' a -&gt; b
+</span><a href="Data.List.Strict.Internal.html#foldr%27"><span class="hs-identifier hs-var">List'.foldr'</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; b -&gt; b
+</span><a href="#local-6989586621679049624"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679049625"><span class="hs-identifier hs-var">z</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049627"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049626"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-217"></span><span>
+</span><span id="line-218"></span><span class="hs-comment">-- | \(\mathcal{O}(n_M)\). Map each element of the queue into a monoid,</span><span>
+</span><span id="line-219"></span><span class="hs-comment">--   and combine the results.</span><span>
+</span><span id="line-220"></span><span id="local-6989586621679049629"><span id="local-6989586621679049630"><span class="annot"><a href="Data.Steque.Internal.html#foldMap"><span class="hs-identifier hs-type">foldMap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679049629"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679049630"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049629"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049630"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049629"><span class="hs-identifier hs-type">m</span></a></span></span></span><span>
+</span><span id="line-221"></span><span id="foldMap"><span class="annot"><span class="annottext">foldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Steque a -&gt; m
+</span><a href="Data.Steque.Internal.html#foldMap"><span class="hs-identifier hs-var hs-var">foldMap</span></a></span></span><span> </span><span id="local-6989586621679049637"><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679049637"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049638"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049638"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049639"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049639"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; List' a -&gt; m
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; List' a -&gt; m
+</span><a href="Data.List.Strict.Internal.html#foldMap"><span class="hs-identifier hs-var">List'.foldMap</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679049637"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049638"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">m -&gt; m -&gt; m
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; m) -&gt; List' a -&gt; m
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; List' a -&gt; m
+</span><a href="Data.List.Strict.Internal.html#foldMap"><span class="hs-identifier hs-var">List'.foldMap</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; m
+</span><a href="#local-6989586621679049637"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049639"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-222"></span><span>
+</span><span id="line-223"></span><span>
+</span><span id="line-224"></span><span>
+</span><span id="line-225"></span><span class="hs-comment">-- | \(\mathcal{O}(n)\).</span><span>
+</span><span id="line-226"></span><span class="hs-comment">--   Construct a list from a queue. Element order is arbitrary.</span><span>
+</span><span id="line-227"></span><span id="local-6989586621679049641"><span class="annot"><a href="Data.Steque.Internal.html#toList"><span class="hs-identifier hs-type">toList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049641"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679049641"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-228"></span><span id="toList"><span class="annot"><span class="annottext">toList :: forall a. Steque a -&gt; [a]
+</span><a href="Data.Steque.Internal.html#toList"><span class="hs-identifier hs-var hs-var">toList</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049642"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049642"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049643"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049643"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049642"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">List' a -&gt; [a] -&gt; [a]
+forall a. List' a -&gt; [a] -&gt; [a]
+</span><a href="Data.List.Strict.Internal.html#appendToList"><span class="hs-operator hs-var">`List'.appendToList`</span></a></span><span> </span><span class="annot"><span class="annottext">List' a -&gt; [a] -&gt; [a]
+forall a. List' a -&gt; [a] -&gt; [a]
+</span><a href="Data.List.Strict.Internal.html#appendToList"><span class="hs-identifier hs-var">List'.appendToList</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049643"><span class="hs-identifier hs-var">ys</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-229"></span><span>
+</span><span id="line-230"></span><span class="hs-comment">-- | \(\mathcal{O}(n)\).</span><span>
+</span><span id="line-231"></span><span class="hs-comment">--   Construct a list from a queue.</span><span>
+</span><span id="line-232"></span><span class="hs-comment">--   Element order matches queue order, with the head of the list corresponding</span><span>
+</span><span id="line-233"></span><span class="hs-comment">--   to the front of the queue.</span><span>
+</span><span id="line-234"></span><span id="local-6989586621679049218"><span class="annot"><a href="Data.Steque.Internal.html#toListF"><span class="hs-identifier hs-type">toListF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049218"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679049218"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-235"></span><span id="toListF"><span class="annot"><span class="annottext">toListF :: forall a. Steque a -&gt; [a]
+</span><a href="Data.Steque.Internal.html#toListF"><span class="hs-identifier hs-var hs-var">toListF</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049645"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049645"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049646"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049646"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049645"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">List' a -&gt; [a] -&gt; [a]
+forall a. List' a -&gt; [a] -&gt; [a]
+</span><a href="Data.List.Strict.Internal.html#appendToList"><span class="hs-operator hs-var">`List'.appendToList`</span></a></span><span> </span><span class="annot"><span class="annottext">List' a -&gt; [a] -&gt; [a]
+forall a. List' a -&gt; [a] -&gt; [a]
+</span><a href="Data.List.Strict.Internal.html#revAppendToList"><span class="hs-identifier hs-var">List'.revAppendToList</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049646"><span class="hs-identifier hs-var">ys</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-236"></span><span>
+</span><span id="line-237"></span><span class="hs-comment">-- | \(\mathcal{O}(n)\).</span><span>
+</span><span id="line-238"></span><span class="hs-comment">--   Construct a list from a queue.</span><span>
+</span><span id="line-239"></span><span class="hs-comment">--   Element order matches queue order, with the head of the list corresponding</span><span>
+</span><span id="line-240"></span><span class="hs-comment">--   to the back of the queue.</span><span>
+</span><span id="line-241"></span><span id="local-6989586621679049648"><span class="annot"><a href="Data.Steque.Internal.html#toListB"><span class="hs-identifier hs-type">toListB</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049648"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679049648"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-242"></span><span id="toListB"><span class="annot"><span class="annottext">toListB :: forall a. Steque a -&gt; [a]
+</span><a href="Data.Steque.Internal.html#toListB"><span class="hs-identifier hs-var hs-var">toListB</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049649"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049649"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049650"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049650"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049650"><span class="hs-identifier hs-var">ys</span></a></span><span> </span><span class="annot"><span class="annottext">List' a -&gt; [a] -&gt; [a]
+forall a. List' a -&gt; [a] -&gt; [a]
+</span><a href="Data.List.Strict.Internal.html#appendToList"><span class="hs-operator hs-var">`List'.appendToList`</span></a></span><span> </span><span class="annot"><span class="annottext">List' a -&gt; [a] -&gt; [a]
+forall a. List' a -&gt; [a] -&gt; [a]
+</span><a href="Data.List.Strict.Internal.html#revAppendToList"><span class="hs-identifier hs-var">List'.revAppendToList</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049649"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-243"></span><span>
+</span><span id="line-244"></span><span>
+</span><span id="line-245"></span><span>
+</span><span id="line-246"></span><span class="hs-comment">-- | \(\mathcal{O}(n)\). Map each element of a queue to an action,</span><span>
+</span><span id="line-247"></span><span class="hs-comment">--   evaluate these actions from front to back, and collect the results.</span><span>
+</span><span id="line-248"></span><span id="local-6989586621679049651"><span id="local-6989586621679049652"><span id="local-6989586621679049653"><span class="annot"><a href="Data.Steque.Internal.html#traverse"><span class="hs-identifier hs-type">traverse</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679049651"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679049652"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049651"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049653"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049652"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679049651"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679049653"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-249"></span><span id="traverse"><span class="annot"><span class="annottext">traverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Steque a -&gt; f (Steque b)
+</span><a href="Data.Steque.Internal.html#traverse"><span class="hs-identifier hs-var hs-var">traverse</span></a></span></span><span> </span><span id="local-6989586621679049658"><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679049658"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-type">Steque</span></a></span><span> </span><span id="local-6989586621679049659"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049659"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679049660"><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049660"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(List' b -&gt; List' b -&gt; Steque b)
+-&gt; f (List' b) -&gt; f (List' b) -&gt; f (Steque b)
+forall a b c. (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+forall (f :: * -&gt; *) a b c.
+Applicative f =&gt;
+(a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+</span><span class="hs-identifier hs-var">liftA2</span></span><span> </span><span class="annot"><span class="annottext">List' b -&gt; List' b -&gt; Steque b
+forall a. List' a -&gt; List' a -&gt; Steque a
+</span><a href="Data.Steque.Internal.html#Steque"><span class="hs-identifier hs-var">Steque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; f b) -&gt; List' a -&gt; f (List' b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; List' a -&gt; f (List' b)
+</span><a href="Data.List.Strict.Internal.html#traverse"><span class="hs-identifier hs-var">List'.traverse</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679049658"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049659"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; f b) -&gt; List' a -&gt; f (List' b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; List' a -&gt; f (List' b)
+</span><a href="Data.List.Strict.Internal.html#traverse"><span class="hs-identifier hs-var">List'.traverse</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; f b
+</span><a href="#local-6989586621679049658"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">List' a
+</span><a href="#local-6989586621679049660"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-250"></span></pre></body></html>

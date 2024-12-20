@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="annot"><span class="hs-comment">{-| A t'Queue' is a spine-strict queue that incrementally rotates itself when
+    elements are added or removed.
+
+    == Laziness
+
+    Evaluating the root of the queue (i.e. @(_ :: t'Queue' a)@) to weak head normal form
+    evaluates both the entire back of the queue and the extent of the front the queue
+    equal to the size of the back to normal form, while the remainder of
+    the front of the queue is represented as at most one thunk.
+
+    Functions do not perform any additional evaluations unless their documentation
+    directly specifies so.
+
+    == Performance
+
+    Each function's time complexity is provided in the documentation.
+
+    \(n\) refers to the total number of elements in the queue.
+    Parts of the heap are denoted using subscripts:
+    \(n_L\) refers to the left side, \(n_R\) to the right side,
+    and \(n_M\) refers to the total number of elements collected with the 'Monoid'.
+
+    == Implementation
+
+    Description of the real-time queue can be found within the following paper:
+
+    - Chris Okasaki, /&quot;Purely Functional Data Structures&quot;/, September 1996, pages 41-44,
+      https://www.cs.cmu.edu/~rwh/students/okasaki.pdf
+ -}</span></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">module</span><span> </span><span class="annot"><a href="Data.Queue.html"><span class="hs-identifier">Data.Queue</span></a></span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- * Itself</span></span><span>
+</span><span id="line-33"></span><span>    </span><span class="annot"><a href="Data.Queue.Internal.html#Queue"><span class="hs-identifier">Queue</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Queue.Internal.html#Empty"><span class="hs-identifier">Empty</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#%3A%3C%7C"><span class="hs-operator">(:&lt;|)</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Construct</span></span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#empty"><span class="hs-identifier">empty</span></a></span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#singleton"><span class="hs-identifier">singleton</span></a></span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#fromListF"><span class="hs-identifier">fromListF</span></a></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Front</span></span><span>
+</span><span id="line-41"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** View</span></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#ViewF"><span class="hs-identifier">ViewF</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#viewF"><span class="hs-identifier">viewF</span></a></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Back</span></span><span>
+</span><span id="line-46"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Insert</span></span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#%7C%3E"><span class="hs-operator">(|&gt;)</span></a></span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Full queue</span></span><span>
+</span><span id="line-50"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Size</span></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#null"><span class="hs-identifier">Data.Queue.Internal.null</span></a></span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#size"><span class="hs-identifier">Data.Queue.Internal.size</span></a></span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span>    </span><span class="annot"><span class="hs-comment">-- ** Fold</span></span><span>
+</span><span id="line-55"></span><span>    </span><span class="annot"><span class="hs-comment">-- | === Left-to-right</span></span><span>
+</span><span id="line-56"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#foldl"><span class="hs-identifier">Data.Queue.Internal.foldl</span></a></span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#foldl%27"><span class="hs-identifier">Data.Queue.Internal.foldl'</span></a></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span>    </span><span class="annot"><span class="hs-comment">-- | === Right-to-left</span></span><span>
+</span><span id="line-60"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#foldr"><span class="hs-identifier">Data.Queue.Internal.foldr</span></a></span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#foldr%27"><span class="hs-identifier">Data.Queue.Internal.foldr'</span></a></span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span>    </span><span class="annot"><span class="hs-comment">-- | === Monoid</span></span><span>
+</span><span id="line-64"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#foldMap"><span class="hs-identifier">Data.Queue.Internal.foldMap</span></a></span><span>
+</span><span id="line-65"></span><span>
+</span><span id="line-66"></span><span>    </span><span class="annot"><span class="hs-comment">-- | === List</span></span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#toList"><span class="hs-identifier">toList</span></a></span><span>
+</span><span id="line-68"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#toListF"><span class="hs-identifier">toListF</span></a></span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Queue.Internal.html#toListB"><span class="hs-identifier">toListB</span></a></span><span>
+</span><span id="line-70"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="Data.Queue.Internal.html"><span class="hs-identifier">Data.Queue.Internal</span></a></span><span>
+</span><span id="line-73"></span></pre></body></html>
